@@ -1,0 +1,48 @@
+# Binaries & build artifacts
+/bin/
+/kubeguard
+*.exe
+*.out
+*.test
+
+# Coverage & profiles
+*.cov
+coverage.txt
+coverage.html
+
+# Local runtime databases & caches (never commit state or PII)
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+
+# Secrets & local environment overrides (NEVER commit credentials)
+.env
+.env.*
+!.env.example
+*kubeconfig*
+*.pem
+*.key
+service-account*.json
+
+# Terraform local state & provider binaries
+deployment/terraform/.terraform/
+deployment/terraform/*.tfstate
+deployment/terraform/*.tfstate.*
+deployment/terraform/*.tfvars
+!deployment/terraform/terraform.tfvars.example
+deployment/terraform/*.tfplan
+deployment/terraform/tfplan
+deployment/terraform/crash.log
+
+# Logs, additional DB journals, and editor/OS swap files
+*.log
+*.db-journal
+*.sqlite-shm
+*.sqlite-wal
+.DS_Store
+*.bak
+*.swp
+*.swo
+*~
+
