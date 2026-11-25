@@ -1,0 +1,64 @@
+name: KubeGuard AgentOps CI & Golden Evaluation
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-and-evaluate:
+    name: Go Vet, Unit Tests & Golden Incident Evaluation Suite
+    runs-on: ubuntu-latest
+    env:
+      KUBEGUARD_ENV: test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.x"
+
+      - name: Check for hardcoded API keys or credentials
+        run: |
+          if grep -RInE 'AIza[0-9A-Za-z_-]{35}|BEGIN (RSA|EC|PRIVATE) KEY' cmd/ internal/ eval/ deployment/; then
+            echo "Hardcoded credential pattern detected!"
+            exit 1
+          fi
+
+      - name: Run go vet
+        run: go vet ./...
+
+      - name: Run unit tests & golden evaluation suite with race detector
+        run: go test -race -v ./...
+
+  terraform-validate:
+    name: Validate Terraform IaC
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: deployment/terraform
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.x"
+
+      - name: Check Terraform formatting
+        run: terraform fmt -check
+
+      - name: Initialize Terraform (backend disabled)
+        run: terraform init -backend=false
+
+      - name: Validate Terraform configuration
+        run: terraform validate
