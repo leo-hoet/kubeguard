@@ -1,0 +1,5 @@
+project_id      = "your-gcp-project-id"
+region          = "us-central1"
+service_name    = "kubeguard-agent"
+container_image = "us-central1-docker.pkg.dev/your-gcp-project-id/agents/kubeguard:v1.0.0"
+allowed_origins = "https://kubeguard.example.com"
